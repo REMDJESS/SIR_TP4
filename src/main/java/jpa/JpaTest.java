@@ -1,61 +1,94 @@
 package jpa;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-import domain.Magazine;
-import service.MagazineService;
+import domain.ElectronicDevice;
+import domain.Home;
+import domain.Person;
 
+/**
+ *
+ * @author ANANI
+ */
 public class JpaTest {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		
-		EntityManager manager = EntityManagerHelper.getEntityManager();
-		EntityTransaction tx = manager.getTransaction();
-		tx.begin();
-		try {
-			
-			Magazine mag1 = new Magazine();
-			mag1.setPrix(4);
-			mag1.setTitle("LinuxMag");
-			manager.persist(mag1);
-			
-			Magazine mag2 = new Magazine();
-			mag2.setPrix(2);
-			mag2.setTitle("LinuxMag");
-			manager.persist(mag2);
-			
-			Magazine mag3 = new Magazine();
-			mag3.setPrix(7);
-			mag3.setTitle("MISC");
-			manager.persist(mag3);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		tx.commit();
+    private EntityManager manager;
 
-		MagazineService magService = new MagazineService();
-		System.out.println("Q1 = " +magService.tousLesMagazines().size());
-		System.out.println("Q2 = " +magService.tousLesMagazinesLinuxMag().size());
-		System.out.println("Q3 = " +magService.tousLesMagazinesLinuxMagOuMisc().size());
-		System.out.println("Q4 = " +magService.tousLesMagazinesDontPrixEntre3et5().size());
-		System.out.println("Q5 = " +magService.tousLesMagazinesDontPrixEntre3et5ou7().size());
-		System.out.println("Q6 = " +magService.tousLesMagazinesDontLeTitreCommenceParL().size());
-		System.out.println("Q6bis = " +magService.tousLesMagazinesDontLeTitreIDeuxiemePosition().size());
-		System.out.println("Q7 = " +magService.tousLesMagazinesDontLeTitreestSoitSoitSoit().size());
-		System.out.println("Q8 = " +magService.tousLesMagazinesSansArticle().size());
-		System.out.println("Q9 = " +magService.tousLesMagazinesSansEditeur().size());
-		System.out.println("Q10 = " +magService.tousLesMagazinesDontEditeurEstDiamond().size());
-		
-		manager.close();
-		EntityManagerHelper.closeEntityManagerFactory();
-		//		factory.close();
-	}
-	
+    public JpaTest(EntityManager manager) {
+        this.manager = manager;
+    }
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        EntityManagerFactory factory = Persistence
+                .createEntityManagerFactory("example");
+        EntityManager manager = factory.createEntityManager();
+        JpaTest test = new JpaTest(manager);
+
+        EntityTransaction tx = manager.getTransaction();
+        tx.begin();
+
+        try {
+            test.createPerson();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        tx.commit();
+
+        test.listPerson();
+        test.listHome();
+
+        manager.close();
+        System.out.println("done");
+    }
+
+    
+    private void createPerson() {
+        int nbPerson = manager.createQuery("Select p From Person p", Person.class).getResultList().size();
+        if (nbPerson == 0) {
+             //List<ElectronicDevice> ed = new ArrayList<ElectronicDevice>();
+
+            Home home1 = new Home(500, 3, "beaulieu");
+            Home home2 = new Home(70, 5, "joliot");
+            Home home3 = new Home(100, 6, "mirabeau");
+            home1.getEquipement();
+            manager.persist(home1);
+            manager.persist(home2);
+            manager.persist(home3);
+            Person person1 = new Person("anani", "raymond", "ankor@gmail.com");
+            Person person2 = new Person("Vasquez", "Antonio", "antonio@gmail.com");
+            manager.persist(person1);
+            manager.persist(person2);
+          
+        }
+    }
+     
+    private void listPerson() {
+        List<Person> listPerson = manager.createQuery("Select p From Person p", Person.class).getResultList();
+
+        System.out.println("num of personnes:" + listPerson.size());
+        for (Person next : listPerson) {
+            System.out.println("next personne: " + next);
+        }
+    }
+
+    private void listHome() {
+        List<Home> listHome = manager.createQuery("Select p From Home p", Home.class).getResultList();
+
+        System.out.println("num of home:" + listHome.size());
+        for (Home next : listHome) {
+            System.out.println("next home: " + next.getNameHome());
+        }
+    }
 
 }
