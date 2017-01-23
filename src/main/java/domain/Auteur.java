@@ -14,8 +14,6 @@ public class Auteur {
 	public Auteur() {
 		// TODO Auto-generated constructor stub
 	}
-	
-
 	public long getId() {
 		return id;
 	}
