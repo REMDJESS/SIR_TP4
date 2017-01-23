@@ -78,7 +78,7 @@ public class JpaTest {
 
         System.out.println("num of personnes:" + listPerson.size());
         for (Person next : listPerson) {
-            System.out.println("next personne: " + next);
+            System.out.println("next personne : " + next);
         }
     }
 
